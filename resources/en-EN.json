@@ -1,0 +1,10 @@
+{
+  "gasoline": "Gasoline",
+  "gasolineType": "Gasoline Type",
+  "gasolineCost": "Gasoline Cost",
+  "gasolineCount": "Gasoline Litters Number",
+  "gasolineTimer": "Number Of Seconds",
+  "go": "GO",
+  "start": "Start",
+  "back": "Back"
+}
