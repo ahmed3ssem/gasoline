@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gasoline/view/home/home_screen.dart';
 import 'common/app_colors.dart';
@@ -7,16 +8,19 @@ import 'common/app_colors.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  runApp(EasyLocalization(
-    child: const MyApp(),
-    path: "resources",
-    saveLocale: true,
-    fallbackLocale: const Locale('ar', 'AR'),
-    supportedLocales: const [
-      Locale('en','EN'),
-      Locale('ar' , 'AR'),
-    ],
-  ));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft])
+      .then((_) {
+    runApp(EasyLocalization(
+      child: const MyApp(),
+      path: "resources",
+      saveLocale: true,
+      fallbackLocale: const Locale('ar', 'AR'),
+      supportedLocales: const [
+        Locale('en','EN'),
+        Locale('ar' , 'AR'),
+      ],
+    ));
+  });
 }
 
 class MyApp extends StatelessWidget{

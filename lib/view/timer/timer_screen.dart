@@ -9,8 +9,9 @@ class TimerScreen extends StatefulWidget {
 
   final int price;
   final int count;
+  final int speed;
 
-   const TimerScreen(this.price, this.count , {Key? key}) : super(key: key);
+   const TimerScreen(this.price, this.count , this.speed ,  {Key? key}) : super(key: key);
 
   @override
   State<TimerScreen> createState() => _TimerScreenState();
@@ -23,8 +24,21 @@ class _TimerScreenState extends State<TimerScreen> {
   Duration countDuration = const Duration();
 
   void startTimer() {
-    priceTimer = Timer.periodic(const Duration(seconds: 1), (_) => addPriceTimer());
-    countTimer = Timer.periodic(const Duration(seconds: 1), (_) => addCountTime());
+    //Average speed
+    if(widget.speed == 0){
+      priceTimer = Timer.periodic(const Duration(seconds: 1), (_) => addPriceTimer());
+      countTimer = Timer.periodic(const Duration(seconds: 1), (_) => addCountTime());
+    }
+    //Fast Speed
+    if(widget.speed == 1){
+      priceTimer = Timer.periodic(const Duration(milliseconds: 10), (_) => addPriceTimer());
+      countTimer = Timer.periodic(const Duration(milliseconds: 10), (_) => addCountTime());
+    }
+    //Slow Speed
+    if(widget.speed == 2){
+      priceTimer = Timer.periodic(const Duration(seconds: 10), (_) => addPriceTimer());
+      countTimer = Timer.periodic(const Duration(seconds: 10), (_) => addCountTime());
+    }
   }
 
   void stopTimer({bool resets = true}) {
@@ -125,14 +139,27 @@ class _TimerScreenState extends State<TimerScreen> {
         title: Text('gasoline'.tr().toString()),
         centerTitle: true,
       ),
-      body: Column(
+      body: ListView(
         //mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: ScreenUtil().setHeight(20),),
           displayPriceTimer(),
           SizedBox(height: ScreenUtil().setHeight(20),),
           displayCountTimer(),
-          const Spacer(),
+          SizedBox(height: ScreenUtil().setHeight(20),),
+          Container(
+            width: ScreenUtil().setWidth(50),
+            margin: EdgeInsets.only(right: ScreenUtil().setWidth(120) , left: ScreenUtil().setWidth(120)),
+            padding: EdgeInsets.only(right: ScreenUtil().setWidth(8) , left: ScreenUtil().setWidth(8) , top: ScreenUtil().setHeight(8) , bottom: ScreenUtil().setHeight(8)),
+            decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(20)
+            ),
+            child: Center(
+              child: Text((widget.count*widget.price).toString()+'ج', style: TextStyle(fontWeight: FontWeight.w400, color: AppColors.white, fontSize: 45)),
+            ),
+          ),
+          SizedBox(height: ScreenUtil().setHeight(20),),
           Container(
             margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(5)),
             child: Row(

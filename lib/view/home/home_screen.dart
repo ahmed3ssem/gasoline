@@ -131,14 +131,22 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
               ),
             ),
           ),
-          SizedBox(height: ScreenUtil().setHeight(245),),
+          SizedBox(height: ScreenUtil().setHeight(20),),
           Center(
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.primaryColor
                 ),
                 onPressed: (){
-                  componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount));
+                  if(chosenSpeed == speedList[0]){
+                    componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount) , 1);
+                  }
+                  if(chosenSpeed == speedList[1]){
+                    componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount) , 0);
+                  }
+                  if(chosenSpeed == speedList[2]){
+                    componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount) , 2);
+                  }
                 },
                 child: Text('go'.tr().toString() , style: TextStyle(fontWeight: FontWeight.w700 , color: AppColors.white , fontSize: 17.sp),)
             ),

@@ -5,5 +5,5 @@ class HomePresenterComponant{
 
   void setView(HomeViewComponant componant){}
 
-  void moveToNextScreen(BuildContext context , int price , int timer){}
+  void moveToNextScreen(BuildContext context , int price , int timer , int speed){}
 }

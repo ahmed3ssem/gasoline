@@ -7,9 +7,9 @@ class HomePresenter implements HomePresenterComponant{
 
   late HomeViewComponant viewComponant;
   @override
-  void moveToNextScreen(BuildContext context , int price , int count ) {
+  void moveToNextScreen(BuildContext context , int price , int count  , int speed) {
     // TODO: implement moveToNextScreen
-    Navigator.push(context, MaterialPageRoute(builder: (context) => TimerScreen(price , count)),);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => TimerScreen(price , count , speed)),);
   }
 
   @override
