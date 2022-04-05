@@ -18,6 +18,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
 
   final HomeModel model = HomeModel();
   late HomePresenterComponant componant;
+  List<String> speedList = ['سريع' , 'متوسط' , 'بطي'];
+  String chosenSpeed = '';
 
   @override
   void initState() {
@@ -25,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
     super.initState();
     componant = HomePresenter();
     componant.setView(this);
+    chosenSpeed = speedList[1];
   }
   @override
   Widget build(BuildContext context) {
@@ -96,26 +99,35 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
             margin: EdgeInsets.only(left: ScreenUtil().setWidth(18) , right: ScreenUtil().setWidth(18)),
             child: Text('gasolineTimer'.tr().toString() , style: TextStyle(color: AppColors.black , fontSize: 15.sp , fontWeight: FontWeight.w400),),
           ),
-          Container(
-            margin: EdgeInsets.only(top: ScreenUtil().setHeight(3) , right: ScreenUtil().setWidth(15) , left: ScreenUtil().setWidth(15)),
-            height: ScreenUtil().setHeight(55),
-            child: TextField(
-              onChanged: (val){
-                setState(() {
-                  model.timer = val;
-                });
-              },
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: '10',
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder:  OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
+          FractionallySizedBox(
+            widthFactor: 1.0,
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Colors.grey
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(10))
+              ),
+              width: double.infinity,
+              margin: EdgeInsets.only(right: ScreenUtil().setWidth(15) , left: ScreenUtil().setWidth(15)),
+              padding: EdgeInsets.only(right: ScreenUtil().setWidth(10) , left: ScreenUtil().setWidth(10)),
+              child: DropdownButton<String>(
+                value: chosenSpeed,
+                isExpanded: true,
+                iconSize: 24.w,
+                underline: const Text(''),
+                elevation: 16,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    chosenSpeed = newValue!;
+                  });
+                },
+                items: speedList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
             ),
           ),
@@ -126,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
                   primary: AppColors.primaryColor
                 ),
                 onPressed: (){
-                  componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.timer));
+                  componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount));
                 },
                 child: Text('go'.tr().toString() , style: TextStyle(fontWeight: FontWeight.w700 , color: AppColors.white , fontSize: 17.sp),)
             ),

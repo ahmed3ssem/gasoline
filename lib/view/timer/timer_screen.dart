@@ -1,26 +1,30 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gasoline/common/app_colors.dart';
-import 'package:gasoline/model/timer/timer_model.dart';
+import 'package:gasoline/view/home/home_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class TimerScreen extends StatefulWidget {
 
-  final int seconds;
+  final int price;
+  final int count;
 
-   const TimerScreen(this.seconds, {Key? key}) : super(key: key);
+   const TimerScreen(this.price, this.count , {Key? key}) : super(key: key);
 
   @override
   State<TimerScreen> createState() => _TimerScreenState();
 }
 
 class _TimerScreenState extends State<TimerScreen> {
-  Timer myTimer = Timer(const Duration(seconds: 1), (){});
-  Duration myDuration = const Duration();
+  Timer priceTimer = Timer(const Duration(seconds: 1), (){});
+  Duration priceDuration = const Duration();
+  Timer countTimer = Timer(const Duration(seconds: 1), (){});
+  Duration countDuration = const Duration();
 
   void startTimer() {
-    myTimer = Timer.periodic(const Duration(seconds: 1), (_) => addTime());
+    priceTimer = Timer.periodic(const Duration(seconds: 1), (_) => addPriceTimer());
+    countTimer = Timer.periodic(const Duration(seconds: 1), (_) => addCountTime());
   }
 
   void stopTimer({bool resets = true}) {
@@ -28,33 +32,64 @@ class _TimerScreenState extends State<TimerScreen> {
       resetTimer();
     }
     setState((){
-      myTimer.cancel();
+      priceTimer.cancel();
+      countTimer.cancel();
     });
   }
 
   void resetTimer() {
     setState((){
-      myDuration = Duration(seconds: widget.seconds);
+      priceDuration = Duration(seconds: widget.price);
+      countDuration = Duration(seconds: widget.count);
     });
   }
 
-  void addTime() {
+  void addPriceTimer() {
     const addSeconds = -1;
     setState(() {
-      final priceSeconds = myDuration.inSeconds + addSeconds;
+      final priceSeconds = priceDuration.inSeconds + addSeconds;
       if (priceSeconds < 0) {
-        myTimer.cancel();
+        priceTimer.cancel();
       } else {
-        myDuration = Duration(seconds: priceSeconds);
+        priceDuration = Duration(seconds: priceSeconds);
+      }
+    });
+  }
+
+  void addCountTime() {
+    const addSeconds = -1;
+    setState(() {
+      final priceSeconds = countDuration.inSeconds + addSeconds;
+      if (priceSeconds < 0) {
+        countTimer.cancel();
+      } else {
+        countDuration = Duration(seconds: priceSeconds);
       }
     });
   }
 
   Widget displayPriceTimer() {
     String strDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = strDigits(myDuration.inHours);
-    final minutes = strDigits(myDuration.inMinutes.remainder(60));
-    final seconds = strDigits(myDuration.inSeconds.remainder(60));
+    final hours = strDigits(priceDuration.inHours);
+    final minutes = strDigits(priceDuration.inMinutes.remainder(60));
+    final seconds = strDigits(priceDuration.inSeconds.remainder(60));
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          displayTimerUI(time: seconds),
+          SizedBox(width: ScreenUtil().setWidth(8),),
+          displayTimerUI(time: minutes),
+          SizedBox(width: ScreenUtil().setWidth(8),),
+          displayTimerUI(time: hours),
+        ]
+    );
+  }
+
+  Widget displayCountTimer() {
+    String strDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = strDigits(countDuration.inHours);
+    final minutes = strDigits(countDuration.inMinutes.remainder(60));
+    final seconds = strDigits(countDuration.inSeconds.remainder(60));
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -85,25 +120,63 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      //mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ValueListenableBuilder(
-          valueListenable: TimerModel.counter,
-          builder: (context, value, child) {
-            SchedulerBinding.instance?.addPostFrameCallback((_) {
-              if(value == true){
-                resetTimer();
-                startTimer();
-              } else {
-                stopTimer();
-              }
-            });
-            return const SizedBox();
-          },
-        ),
-        displayPriceTimer(),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('gasoline'.tr().toString()),
+        centerTitle: true,
+      ),
+      body: Column(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: ScreenUtil().setHeight(20),),
+          displayPriceTimer(),
+          SizedBox(height: ScreenUtil().setHeight(20),),
+          displayCountTimer(),
+          const Spacer(),
+          Container(
+            margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(5)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primaryColor,
+                      //padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16)
+                    ),
+                    onPressed: (){
+                      setState(() {
+                        resetTimer();
+                        startTimer();
+                      });
+                    },
+                    child: Text(
+                      'start'.tr().toString(), style: TextStyle(fontSize: 20, color: AppColors.white),)
+                ),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primaryColor,
+                      //padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16)
+                    ),
+                    onPressed: (){
+                      setState(() {
+                        stopTimer();
+                      });
+                      Navigator.pushReplacement<void, void>(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) => const HomeScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'back'.tr().toString(), style: TextStyle(fontSize: 20, color: AppColors.white),)
+                )
+              ],
+            ),
+          ),
+
+        ],
+      ),
     );
   }
 }
