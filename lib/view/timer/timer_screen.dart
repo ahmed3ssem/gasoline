@@ -7,7 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 class TimerScreen extends StatefulWidget {
 
-  final int price;
+  final int  price;
   final int count;
   final int speed;
 
@@ -22,6 +22,8 @@ class _TimerScreenState extends State<TimerScreen> {
   Duration priceDuration = const Duration();
   Timer countTimer = Timer(const Duration(seconds: 1), (){});
   Duration countDuration = const Duration();
+  int priceSeconds = 0;
+  int countSeconds = 0;
 
   void startTimer() {
     //Average speed
@@ -31,8 +33,8 @@ class _TimerScreenState extends State<TimerScreen> {
     }
     //Fast Speed
     if(widget.speed == 1){
-      priceTimer = Timer.periodic(const Duration(milliseconds: 10), (_) => addPriceTimer());
-      countTimer = Timer.periodic(const Duration(milliseconds: 10), (_) => addCountTime());
+      priceTimer = Timer.periodic(const Duration(microseconds: 10), (_) => addPriceTimer());
+      countTimer = Timer.periodic(const Duration(microseconds: 10), (_) => addCountTime());
     }
     //Slow Speed
     if(widget.speed == 2){
@@ -53,65 +55,59 @@ class _TimerScreenState extends State<TimerScreen> {
 
   void resetTimer() {
     setState((){
-      priceDuration = Duration(seconds: widget.price);
-      countDuration = Duration(seconds: widget.count);
+      priceDuration = Duration(seconds: 0);
+      countDuration = Duration(seconds: 0);
     });
   }
 
   void addPriceTimer() {
-    const addSeconds = -1;
+    const addSeconds = 1;
     setState(() {
-      final priceSeconds = priceDuration.inSeconds + addSeconds;
-      if (priceSeconds < 0) {
+      final seconds = priceDuration.inSeconds + addSeconds;
+      priceDuration = Duration(seconds: seconds);
+      if(seconds >= priceSeconds){
         priceTimer.cancel();
-      } else {
-        priceDuration = Duration(seconds: priceSeconds);
       }
     });
   }
 
   void addCountTime() {
-    const addSeconds = -1;
+    const addSeconds = 1;
     setState(() {
-      final priceSeconds = countDuration.inSeconds + addSeconds;
-      if (priceSeconds < 0) {
+      final seconds = countDuration.inSeconds + addSeconds;
+      countDuration = Duration(seconds: seconds);
+      if(seconds >= countSeconds){
         countTimer.cancel();
-      } else {
-        countDuration = Duration(seconds: priceSeconds);
       }
     });
   }
 
   Widget displayPriceTimer() {
     String strDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = strDigits(priceDuration.inHours);
-    final minutes = strDigits(priceDuration.inMinutes.remainder(60));
+    String strDigitsMinutes(int n) => n.toString().padLeft(4, '0');
+    final minutes = strDigitsMinutes(priceDuration.inMinutes);
     final seconds = strDigits(priceDuration.inSeconds.remainder(60));
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          displayTimerUI(time: seconds),
-          SizedBox(width: ScreenUtil().setWidth(8),),
-          displayTimerUI(time: minutes),
-          SizedBox(width: ScreenUtil().setWidth(8),),
-          displayTimerUI(time: hours),
+          displayCountUI(time: seconds),
+          Text('.', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.black, fontSize: 100)),
+          displayCountUI(time: minutes),
         ]
     );
   }
 
   Widget displayCountTimer() {
     String strDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = strDigits(countDuration.inHours);
-    final minutes = strDigits(countDuration.inMinutes.remainder(60));
+    String strDigitsMinutes(int n) => n.toString().padLeft(4, '0');
+    final minutes = strDigitsMinutes(countDuration.inMinutes);
     final seconds = strDigits(countDuration.inSeconds.remainder(60));
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           displayTimerUI(time: seconds),
-          SizedBox(width: ScreenUtil().setWidth(8),),
+          Text('.', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.black, fontSize: 100)),
           displayTimerUI(time: minutes),
-          SizedBox(width: ScreenUtil().setWidth(8),),
-          displayTimerUI(time: hours),
         ]
     );
   }
@@ -120,25 +116,32 @@ class _TimerScreenState extends State<TimerScreen> {
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: EdgeInsets.only(right: ScreenUtil().setWidth(8) , left: ScreenUtil().setWidth(8) , top: ScreenUtil().setHeight(8) , bottom: ScreenUtil().setHeight(8)),
-            decoration: BoxDecoration(
-                color: AppColors.primaryColor,
-                borderRadius: BorderRadius.circular(20)
-            ),
-            child: Text(time, style: TextStyle(fontWeight: FontWeight.w400, color: AppColors.white, fontSize: 45)),
-          ),
+          Text(time, style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.black, fontSize: 100)),
         ],
       );
 
+  Widget displayCountUI({required String time}) =>
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(time, style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.black, fontSize: 120)),
+        ],
+      );
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    priceSeconds = widget.price*widget.count*60;
+    countSeconds = widget.count*60;
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('gasoline'.tr().toString()),
-        centerTitle: true,
-      ),
+      backgroundColor: Colors.grey,
+
       body: ListView(
         //mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -147,17 +150,8 @@ class _TimerScreenState extends State<TimerScreen> {
           SizedBox(height: ScreenUtil().setHeight(20),),
           displayCountTimer(),
           SizedBox(height: ScreenUtil().setHeight(20),),
-          Container(
-            width: ScreenUtil().setWidth(50),
-            margin: EdgeInsets.only(right: ScreenUtil().setWidth(120) , left: ScreenUtil().setWidth(120)),
-            padding: EdgeInsets.only(right: ScreenUtil().setWidth(8) , left: ScreenUtil().setWidth(8) , top: ScreenUtil().setHeight(8) , bottom: ScreenUtil().setHeight(8)),
-            decoration: BoxDecoration(
-                color: AppColors.primaryColor,
-                borderRadius: BorderRadius.circular(20)
-            ),
-            child: Center(
-              child: Text((widget.count*widget.price).toString()+'ج', style: TextStyle(fontWeight: FontWeight.w400, color: AppColors.white, fontSize: 45)),
-            ),
+          Center(
+            child: Text((widget.price).toString()+'ج', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.black, fontSize: 70)),
           ),
           SizedBox(height: ScreenUtil().setHeight(20),),
           Container(
