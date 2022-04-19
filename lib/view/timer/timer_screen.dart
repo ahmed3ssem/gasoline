@@ -20,6 +20,8 @@ class TimerScreen extends StatefulWidget {
 class _TimerScreenState extends State<TimerScreen> {
   Timer priceTimer = Timer(const Duration(seconds: 1), (){});
   Duration priceDuration = const Duration();
+  Timer priceDecimalTimer = Timer(const Duration(seconds: 1), (){});
+  Duration priceDecimalDuration = const Duration();
   Timer countTimer = Timer(const Duration(seconds: 1), (){});
   Duration countDuration = const Duration();
   int priceSeconds = 0;
@@ -78,6 +80,7 @@ class _TimerScreenState extends State<TimerScreen> {
       countDuration = Duration(seconds: seconds);
       if(seconds >= countSeconds){
         countTimer.cancel();
+
       }
     });
   }
