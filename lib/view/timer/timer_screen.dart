@@ -12,8 +12,9 @@ class TimerScreen extends StatefulWidget {
   final int speed;
   final int priceDecimal;
   final int countDecimal;
+  final double literPrice;
 
-   const TimerScreen(this.price, this.count , this.speed , this.priceDecimal , this.countDecimal ,  {Key? key}) : super(key: key);
+   const TimerScreen(this.price, this.count , this.speed , this.priceDecimal , this.countDecimal , this.literPrice ,  {Key? key}) : super(key: key);
 
   @override
   State<TimerScreen> createState() => _TimerScreenState();
@@ -145,7 +146,7 @@ class _TimerScreenState extends State<TimerScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    priceSeconds = widget.price*widget.count*60+widget.priceDecimal;
+    priceSeconds = widget.price*60+widget.priceDecimal;
     countSeconds = widget.count*60+widget.countDecimal;
   }
 
@@ -163,7 +164,7 @@ class _TimerScreenState extends State<TimerScreen> {
           displayCountTimer(),
           SizedBox(height: ScreenUtil().setHeight(20),),
           Center(
-            child: Text((widget.price).toString()+'ج', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.black, fontSize: 70)),
+            child: Text((widget.literPrice).toString()+'ج', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.black, fontSize: 70)),
           ),
           SizedBox(height: ScreenUtil().setHeight(20),),
           Container(

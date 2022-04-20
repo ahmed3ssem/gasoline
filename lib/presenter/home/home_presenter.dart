@@ -34,7 +34,7 @@ class HomePresenter implements HomePresenterComponant{
     print(priceSplit.runtimeType);
     print('PriceValue '+priceValue.toString()+' PriceD '+priceDecimal.toString()+' CV '+countValue.toString()+' CD '+countDecimal.toString());
     print(priceValue.toString()+priceDecimal.toString());
-    Navigator.push(context, MaterialPageRoute(builder: (context) => TimerScreen(10 , 10 , speed , 25 , 30)),);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => TimerScreen(priceValue , countValue , speed , priceDecimal , countDecimal , price)),);
   }
 
   @override
