@@ -10,8 +10,10 @@ class TimerScreen extends StatefulWidget {
   final int  price;
   final int count;
   final int speed;
+  final int priceDecimal;
+  final int countDecimal;
 
-   const TimerScreen(this.price, this.count , this.speed ,  {Key? key}) : super(key: key);
+   const TimerScreen(this.price, this.count , this.speed , this.priceDecimal , this.countDecimal ,  {Key? key}) : super(key: key);
 
   @override
   State<TimerScreen> createState() => _TimerScreenState();
@@ -20,12 +22,12 @@ class TimerScreen extends StatefulWidget {
 class _TimerScreenState extends State<TimerScreen> {
   Timer priceTimer = Timer(const Duration(seconds: 1), (){});
   Duration priceDuration = const Duration();
-  Timer priceDecimalTimer = Timer(const Duration(seconds: 1), (){});
-  Duration priceDecimalDuration = const Duration();
   Timer countTimer = Timer(const Duration(seconds: 1), (){});
   Duration countDuration = const Duration();
   int priceSeconds = 0;
   int countSeconds = 0;
+  int priceTimerSeconds = 0;
+  int countTimerSeconds = 0;
 
   void startTimer() {
     //Average speed
@@ -44,6 +46,7 @@ class _TimerScreenState extends State<TimerScreen> {
       countTimer = Timer.periodic(const Duration(seconds: 10), (_) => addCountTime());
     }
   }
+
 
   void stopTimer({bool resets = true}) {
     if (resets) {
@@ -65,22 +68,22 @@ class _TimerScreenState extends State<TimerScreen> {
   void addPriceTimer() {
     const addSeconds = 1;
     setState(() {
-      final seconds = priceDuration.inSeconds + addSeconds;
-      priceDuration = Duration(seconds: seconds);
-      if(seconds >= priceSeconds){
+      priceTimerSeconds = priceDuration.inSeconds + addSeconds;
+      priceDuration = Duration(seconds: priceTimerSeconds);
+      if(priceTimerSeconds >= priceSeconds){
         priceTimer.cancel();
       }
     });
   }
 
+
   void addCountTime() {
     const addSeconds = 1;
     setState(() {
-      final seconds = countDuration.inSeconds + addSeconds;
-      countDuration = Duration(seconds: seconds);
-      if(seconds >= countSeconds){
+      countTimerSeconds = countDuration.inSeconds + addSeconds;
+      countDuration = Duration(seconds: countTimerSeconds);
+      if(countTimerSeconds >= countSeconds){
         countTimer.cancel();
-
       }
     });
   }
@@ -88,8 +91,11 @@ class _TimerScreenState extends State<TimerScreen> {
   Widget displayPriceTimer() {
     String strDigits(int n) => n.toString().padLeft(2, '0');
     String strDigitsMinutes(int n) => n.toString().padLeft(4, '0');
-    final minutes = strDigitsMinutes(priceDuration.inMinutes);
-    final seconds = strDigits(priceDuration.inSeconds.remainder(60));
+    String minutes = strDigitsMinutes(priceDuration.inMinutes);
+    final seconds = strDigits(priceDuration.inSeconds.remainder(100));
+    if(widget.priceDecimal>=60 && priceTimerSeconds >= priceSeconds){
+      minutes = strDigitsMinutes(priceDuration.inMinutes-1);
+    }
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -103,8 +109,11 @@ class _TimerScreenState extends State<TimerScreen> {
   Widget displayCountTimer() {
     String strDigits(int n) => n.toString().padLeft(2, '0');
     String strDigitsMinutes(int n) => n.toString().padLeft(4, '0');
-    final minutes = strDigitsMinutes(countDuration.inMinutes);
-    final seconds = strDigits(countDuration.inSeconds.remainder(60));
+    String minutes = strDigitsMinutes(countDuration.inMinutes);
+    final seconds = strDigits(countDuration.inSeconds.remainder(100));
+    if(widget.countDecimal>=60 && countTimerSeconds >= countSeconds){
+      minutes = strDigitsMinutes(countDuration.inMinutes-1);
+    }
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -123,6 +132,7 @@ class _TimerScreenState extends State<TimerScreen> {
         ],
       );
 
+
   Widget displayCountUI({required String time}) =>
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -135,9 +145,8 @@ class _TimerScreenState extends State<TimerScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    priceSeconds = widget.price*widget.count*60;
-    countSeconds = widget.count*60;
-
+    priceSeconds = widget.price*widget.count*60+widget.priceDecimal;
+    countSeconds = widget.count*60+widget.countDecimal;
   }
 
   @override

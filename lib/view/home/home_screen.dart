@@ -20,6 +20,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
   late HomePresenterComponant componant;
   List<String> speedList = ['سريع' , 'متوسط' , 'بطي'];
   String chosenSpeed = '';
+  TextEditingController coastController = TextEditingController();
+  TextEditingController countController = TextEditingController();
 
   @override
   void initState() {
@@ -47,12 +49,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
             margin: EdgeInsets.only(top: ScreenUtil().setHeight(3) , right: ScreenUtil().setWidth(15) , left: ScreenUtil().setWidth(15)),
             height: ScreenUtil().setHeight(55),
             child: TextField(
-              onChanged: (val){
-                setState(() {
-                  model.gasCost = val;
-                });
-              },
-              keyboardType: TextInputType.number,
+              controller: coastController,
+              keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 hintText: '100',
                 enabledBorder: OutlineInputBorder(
@@ -75,12 +73,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
             margin: EdgeInsets.only(top: ScreenUtil().setHeight(3) , right: ScreenUtil().setWidth(15) , left: ScreenUtil().setWidth(15)),
             height: ScreenUtil().setHeight(55),
             child: TextField(
-              onChanged: (val){
-                setState(() {
-                  model.gasCount = val;
-                });
-              },
-              keyboardType: TextInputType.number,
+              controller: countController,
+              keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 hintText: '20',
                 enabledBorder: OutlineInputBorder(
@@ -138,15 +132,22 @@ class _HomeScreenState extends State<HomeScreen> implements HomeViewComponant{
                   primary: AppColors.primaryColor
                 ),
                 onPressed: (){
+                  double coast = double.parse(coastController.value.text.toString());
+                  double count = double.parse(countController.value.text.toString());
+                  double sum = count*coast;
+                  print(coast);
+                  print(count);
+                  print('sum is = '+sum.toString());
                   if(chosenSpeed == speedList[0]){
-                    componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount) , 1);
+                    componant.moveToNextScreen(context, coast , count , 1);
                   }
                   if(chosenSpeed == speedList[1]){
-                    componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount) , 0);
+                    componant.moveToNextScreen(context,coast , count , 0);
                   }
                   if(chosenSpeed == speedList[2]){
-                    componant.moveToNextScreen(context, int.parse(model.gasCost) , int.parse(model.gasCount) , 2);
+                    componant.moveToNextScreen(context, coast , count , 2);
                   }
+                  //componant.moveToNextScreen(context, coastController.value.text.toString(), '', 1);
                 },
                 child: Text('go'.tr().toString() , style: TextStyle(fontWeight: FontWeight.w700 , color: AppColors.white , fontSize: 17.sp),)
             ),
